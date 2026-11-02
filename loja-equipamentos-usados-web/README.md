@@ -17,7 +17,41 @@ Aplicação web onde as lojas registam equipamentos usados (com estado, preço, 
 - gestão de lojas, catálogos, categorias e tipos de equipamento
 - upload de imagens com Multer
 
-A aplicação foi instalada numa máquina virtual na cloud durante o projeto.
+## Arquitetura e infraestrutura
+
+A aplicação foi instalada em **6 máquinas virtuais no Google Cloud (Compute Engine)**, com redundância em todas as camadas:
+
+```mermaid
+flowchart TB
+    U([Utilizadores]) --> VIP{{IP público partilhado}}
+    subgraph LB[Balanceamento de carga]
+        LB1[Load balancer 1<br/>HAProxy + keepalived]
+        LB2[Load balancer 2<br/>HAProxy + keepalived]
+    end
+    VIP --> LB1
+    VIP -. failover .-> LB2
+    subgraph APP[Servidores da aplicação]
+        W1[Servidor web 1<br/>Node.js/Express + Vue]
+        W2[Servidor web 2<br/>Node.js/Express + Vue]
+    end
+    LB1 --> W1 & W2
+    LB2 --> W1 & W2
+    subgraph DB[Base de dados]
+        DB1[(MongoDB principal)]
+        DB2[(MongoDB backup)]
+    end
+    W1 --> DB1
+    W2 --> DB1
+    DB1 -. cópia .-> DB2
+```
+
+| Camada | VMs | Função |
+|--------|-----|--------|
+| Balanceamento | 2 | **HAProxy** distribui os pedidos pelos dois servidores web. O **keepalived** mantém um IP partilhado entre os dois balanceadores e, se o ativo falhar, um script de *takeover* passa o IP para o outro. |
+| Aplicação | 2 | API Node.js/Express e frontend Vue. As sessões ficam guardadas no MongoDB (`connect-mongo`) e não na memória do servidor, por isso qualquer um dos dois servidores pode atender qualquer pedido. |
+| Dados | 2 | MongoDB principal, mais uma segunda instância de backup. |
+
+As VMs e as respetivas configurações (`haproxy.cfg`, `keepalived.conf`, `takeover.sh`) foram desativadas no fim da cadeira e não estão neste repositório.
 
 ## Executar
 ```bash
