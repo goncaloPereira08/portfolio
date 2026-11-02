@@ -54,17 +54,17 @@ Email: aluno@lifethreads.pt | Password: SenhaForte123!
 
 ## Testes Automáticos
 
-O projeto possui uma extensa suite de testes (Vitest + Supertest) que validam a lógica, a segurança (HTTP 401), os limites de validação (HTTP 400 pelo Zod) e a interface. Para executar os testes:
+O backend tem uma suite de testes (Vitest + Supertest) que valida a lógica, a segurança (HTTP 401) e os limites de validação (HTTP 400 pelo Zod). Para executar os testes:
 
 - No Backend:
 cd backend
 npm install
 npm run test
 
-- No Frontend:
+- No Frontend (verificação de tipos + build de produção):
 cd frontend
 npm install
-npm run test
+npm run build
 
 ## Estrutura do Projeto
 
@@ -88,4 +88,6 @@ docker-compose.yml e Dockerfiles: Orquestração do sistema.
 - **Controlo de acesso:** qualquer utilizador autenticado podia editar threads de outros e editar ou apagar memórias de outros. Agora só o criador da thread e o autor da memória o podem fazer. A atualização de threads aceita apenas `titulo` e `descricao`, o que impede, por exemplo, alterar o `id_criador`.
 - **JWT:** sem `JWT_SECRET` definido, o servidor usava o segredo `'secret'`, o que permitia forjar tokens. Agora recusa arrancar (exceto nos testes).
 - **Uploads:** aceita apenas imagens e vídeos, com um limite de 20 MB. Como a pasta é servida publicamente, um ficheiro HTML enviado podia ser usado para XSS. A pasta `uploads/` passou a ser criada automaticamente.
+- **Dependências:** o `package-lock.json` do backend estava dessincronizado do `package.json`, o que fazia falhar o `npm ci`. Foi regenerado.
+- Testado: `npm install` no backend e `npm run build` no frontend (verificação de tipos TypeScript + build Vite) sem erros.
 - **Segredos:** a chave da API Gemini estava escrita no `docker-compose.yml` e no `.env` entregues. Foram removidas e substituídas por um `.env.example`.

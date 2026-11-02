@@ -1,5 +1,5 @@
 const Utilizador = require('../models/Utilizador');
-const bcrypt = require('bcrypt'); // ou bcryptjs
+const bcrypt = require('bcryptjs');
 
 exports.criarUtilizador = async (req, res) => {
   try {

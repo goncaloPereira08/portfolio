@@ -37,3 +37,5 @@ src/                   # frontend Vue 3 (components/, router/, stores/)
 - **Configuração:** o IP do servidor usado na entrega estava escrito diretamente em todo o frontend. Passou a vir de `VUE_APP_API_URL`, e as origens CORS de `CORS_ORIGINS`.
 - **Catálogos:** as rotas `/api/catalogos` existiam mas não estavam montadas no servidor, por isso o formulário de registo de equipamentos não carregava os catálogos.
 - O servidor deixa de arrancar sem `JWT_SECRET`. Foi removido código morto (ligação SQLite não utilizada).
+- **Dependências:** o projeto usava `bcrypt` (nativo) e `bcryptjs` em sítios diferentes. Passou a usar só `bcryptjs`, que gera hashes compatíveis, e foram retiradas dependências nativas não usadas (`sqlite3`, `mysql2`), que impediam o `npm install` em máquinas sem ferramentas de compilação.
+- Testado: `npm install` e `npm run build` do frontend Vue sem erros; sintaxe do backend verificada com `node --check`.
