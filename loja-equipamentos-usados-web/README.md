@@ -19,7 +19,7 @@ Aplicação web onde as lojas registam equipamentos usados (com estado, preço, 
 
 ## Arquitetura e infraestrutura
 
-A aplicação foi instalada em **6 máquinas virtuais no Google Cloud (Compute Engine)**, com redundância em todas as camadas:
+A aplicação foi instalada em **6 máquinas virtuais no Google Cloud (Compute Engine)**, com redundância em todas as camadas. **A minha contribuição principal neste projeto foi a infraestrutura:** criei e configurei as VMs, os load balancers (HAProxy + keepalived, incluindo o *failover* do IP partilhado) e a cópia da base de dados.
 
 ```mermaid
 flowchart TB
@@ -38,18 +38,18 @@ flowchart TB
     LB2 --> W1 & W2
     subgraph DB[Base de dados]
         DB1[(MongoDB principal)]
-        DB2[(MongoDB backup)]
+        DB2[(MongoDB réplica)]
     end
     W1 --> DB1
     W2 --> DB1
-    DB1 -. cópia .-> DB2
+    DB1 -. replicação .-> DB2
 ```
 
 | Camada | VMs | Função |
 |--------|-----|--------|
 | Balanceamento | 2 | **HAProxy** distribui os pedidos pelos dois servidores web. O **keepalived** mantém um IP partilhado entre os dois balanceadores e, se o ativo falhar, um script de *takeover* passa o IP para o outro. |
 | Aplicação | 2 | API Node.js/Express e frontend Vue. As sessões ficam guardadas no MongoDB (`connect-mongo`) e não na memória do servidor, por isso qualquer um dos dois servidores pode atender qualquer pedido. |
-| Dados | 2 | MongoDB principal, mais uma segunda instância de backup. |
+| Dados | 2 | MongoDB principal e uma segunda VM que mantém uma cópia integral dos dados da principal (backup). |
 
 As VMs e as respetivas configurações (`haproxy.cfg`, `keepalived.conf`, `takeover.sh`) foram desativadas no fim da cadeira e não estão neste repositório.
 
