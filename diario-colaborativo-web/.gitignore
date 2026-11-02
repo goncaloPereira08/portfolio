@@ -1,0 +1,23 @@
+# Dependências
+node_modules/
+
+# Ficheiros de ambiente (Obrigatório ignorar as passwords!)
+.env
+.env.local
+
+# Ficheiros compilados / Build
+dist/
+build/
+
+# Logs e outros
+npm-debug.log*
+.DS_Store
+*.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+dist
+dist-ssr
+*.local
