@@ -1,0 +1,117 @@
+# Projeto_segurança_si001
+
+Compilar:
+javac mySaudeServer.java
+javac mySaude.java
+javac criarUser.java
+
+
+Criar chaves(assimetricas):
+    keytool -genkeypair -alias maria -keyalg RSA -keysize 2048 -keystore keystore.maria -storetype PKCS12 -storepass pass123 -dname "CN=Maria"
+    keytool -genkeypair -alias silva -keyalg RSA -keysize 2048 -keystore keystore.silva -storetype PKCS12 -storepass pass456 -dname "CN=Silva"
+
+
+Criar a chave do servidor:
+keytool -genkeypair -alias server -keyalg RSA -keysize 2048 -keystore keystore.server -storetype PKCS12 -storepass serverpass -dname "CN=Servidor"
+
+Extrair a chave publica do servidor:
+keytool -exportcert -alias server -keystore keystore.server -storepass serverpass -rfc -file server.cer
+
+
+"exportar" chave publica da maria:
+    keytool -exportcert -alias maria -keystore keystore.maria -storepass pass123 -rfc -file maria.cer
+
+"exportar" chave publica do silva:
+    keytool -exportcert -alias silva -keystore keystore.silva -storepass pass456 -rfc -file silva.cer
+
+"importar" a chave publica do Servidor para a maria:
+    keytool -importcert -alias server -keystore keystore.maria -storepass pass123 -noprompt -file server.cer
+
+"importar" a chave publica do Servidor para o silva:
+    keytool -importcert -alias server -keystore keystore.silva -storepass pass456 -noprompt -file server.cer
+
+Registar os utilizadores:
+    java criarUser maria medico pass123 -f maria.cer
+    java criarUser silva utente pass456 -f silva.cer
+
+
+Enviar(-e):
+mySaude -s endereço:porto_do_servidor -u username -e nomes_de_ficheiros -t username_do_destinatario
+    Exemplo:
+        server:
+            java mySaudeServer 23456
+        client:
+            java mySaude -s 127.0.0.1:23456 -u maria -e teste.txt -t silva
+
+
+Receber(-r):
+mySaude -s endereço:porto_do_servidor -u username -r nomes_de_ficheiros
+    Exemplo:
+        java mySaudeServer 23456
+        java mySaude -s 127.0.0.1:23456 -u silva -r aa.pdf dd.pdf teste.txt
+
+
+Cifrar(-c):
+mySaude -u username -p password -c nomes_de_ficheiros -t username_do_destinatario
+    Exemplo:
+        java mySaude -u maria -p pass123 -c bb.pdf gg.pdf -t silva
+
+
+Decifrar(-d):
+mySaude -u username -p password -d nomes_de_ficheiros
+    Exemplo:
+        java mySaude -u silva -p pass456 -d bb.pdf.cifrado gg.pdf.cifrado
+        
+
+Cifrar e enviar(-ce):
+mySaude -s endereço:porto_do_servidor -u username -p password -ce nomes_de_ficheiros -t username_do_destinatario
+    Exemplo:
+        java mySaudeServer 23456
+        java mySaude -s 127.0.0.1:23456 -u maria -p pass123 -ce bb.pdf gg.pdf -t silva
+
+
+Receber e decifrar(-rd):
+mySaude -s endereço:porto_do_servidor -u username -p password -rd nomes_de_ficheiros
+    Exemplo:
+        java mySaudeServer 23456
+        java mySaude -s 127.0.0.1:23456 -u silva -p pass456 -rd bb.pdf gg.pdf
+
+
+Assinar(-a):
+mySaude -u username -p password -a nomes_de_ficheiros
+    Exemplo:
+        java mySaude -u maria -p pass123 -a ee.pdf nn.pdf
+
+
+Validar assinatura(-v):
+mySaude -u username -p password -v nomes_de_ficheiros -t username_de_quem_assinou
+    Exemplo:
+        java mySaude -u silva -p pass456 -v ee.pdf -t maria
+
+
+Assinar e enviar(-ae):
+mySaude -s endereço:porto_do_servidor -u username -p password -ae nomes_de_ficheiros -t username_do_destinatario
+    Exemplo:
+        java mySaudeServer 23456
+        java mySaude -s 127.0.0.1:23456 -u maria -p pass123 -ae bb.pdf -t silva
+
+
+Receber e validar assinatura(-rv):
+mySaude -s endereço:porto_do_servidor -u username -p password -rv nomes_de_ficheiros -t username_de_quem_assinou
+    Exemplo:
+        java mySaudeServer 23456
+        java mySaude -s 127.0.0.1:23456 -u silva -p pass456 -rv bb.pdf -t maria
+
+
+Assinar, cifrar e enviar(-ace):
+mySaude -s endereço:porto_do_servidor -u username -p password -ace nomes_de_ficheiros -t username_do_destinatario
+    Exemplo:
+        java mySaudeServer 23456
+        java mySaude -s 127.0.0.1:23456 -u maria -p pass123 -ace bb.pdf -t silva
+
+
+Receber, decifrar e validar assinatura(-rdv):
+mySaude -s endereço:porto_do_servidor -u username -p password -rdv nomes_de_ficheiros -t username_de_quem_assinou
+    Exemplo:
+        java mySaudeServer 23456
+        java mySaude -s 127.0.0.1:23456 -u silva -p pass456 -rdv bb.pdf -t maria

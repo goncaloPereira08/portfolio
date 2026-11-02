@@ -1,0 +1,94 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  nome          String
+  email         String       @unique
+  password_hash String
+  foto_perfil   String?      // Guarda o URL da foto de perfil
+  criado_em     DateTime     @default(now())
+  
+  threadsCriadas Thread[]    @relation("CriadorThread")
+  membroDe       ThreadMember[]
+  memories       Memory[]    // Memórias que o utilizador criou
+  likes          Like[]      // Gostos que o utilizador deu
+  comentarios    Comentario[]// Comentários que o utilizador fez
+}
+
+model Thread {
+  id          Int            @id @default(autoincrement())
+  titulo      String
+  descricao   String?
+  id_criador  Int
+  criado_em   DateTime       @default(now())
+  
+  criador     User           @relation("CriadorThread", fields: [id_criador], references: [id])
+  membros     ThreadMember[]
+  memories    Memory[]
+}
+
+model ThreadMember {
+  id            Int      @id @default(autoincrement())
+  id_thread     Int
+  id_utilizador Int
+  cargo         String   @default("MEMBER") 
+  adicionado_em DateTime @default(now())
+
+  thread        Thread   @relation(fields: [id_thread], references: [id])
+  utilizador    User     @relation(fields: [id_utilizador], references: [id])
+
+  @@unique([id_thread, id_utilizador])
+}
+
+model Memory {
+  id          Int          @id @default(autoincrement())
+  texto       String
+  anexo_url   String?      // URL da foto ou vídeo
+  tipo_anexo  String?      // "imagem" ou "video"
+  criado_em   DateTime     @default(now())
+  
+  id_thread   Int
+  id_autor    Int
+  
+  thread      Thread       @relation(fields: [id_thread], references: [id])
+  autor       User         @relation(fields: [id_autor], references: [id])
+  
+  likes       Like[]
+  comentarios Comentario[]
+  tags        Tag[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  id_user   Int
+  id_memory Int
+  user      User     @relation(fields: [id_user], references: [id])
+  memory    Memory   @relation(fields: [id_memory], references: [id])
+
+  @@unique([id_user, id_memory]) // Impede dar gosto duas vezes na mesma memória
+}
+
+model Comentario {
+  id        Int      @id @default(autoincrement())
+  texto     String
+  criado_em DateTime @default(now())
+  id_user   Int
+  id_memory Int
+  user      User     @relation(fields: [id_user], references: [id])
+  memory    Memory   @relation(fields: [id_memory], references: [id])
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  nome      String   @unique
+  memories  Memory[] // Uma tag pode estar em várias memórias
+}

@@ -1,0 +1,17 @@
+#!/bin/bash
+PYTHON="python3" # Pode-se modificar esta variavel, se necessario
+PROGRAM="pwordcount.py" # Nao pode modificar esta variavel
+
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 [-m t|u|o] [-p n] [-i s] [-l f] file1 [file2 ...]"
+    exit 1
+fi
+
+if [ ! -f "$PROGRAM" ]; then
+    echo "Error: $PROGRAM does not exist."
+    exit 1
+fi
+
+${PYTHON} "${PROGRAM}" "$@"
+
+
