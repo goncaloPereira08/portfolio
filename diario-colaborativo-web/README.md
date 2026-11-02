@@ -83,3 +83,9 @@ Nesta Fase 4, a estrutura foi expandida para suportar a arquitetura completa:
 /frontend/src: Componentes React/Vite, incluindo lógica de Polling no feed.
 
 docker-compose.yml e Dockerfiles: Orquestração do sistema.
+
+## Revisão para o portefólio
+- **Controlo de acesso:** qualquer utilizador autenticado podia editar threads de outros e editar ou apagar memórias de outros. Agora só o criador da thread e o autor da memória o podem fazer. A atualização de threads aceita apenas `titulo` e `descricao`, o que impede, por exemplo, alterar o `id_criador`.
+- **JWT:** sem `JWT_SECRET` definido, o servidor usava o segredo `'secret'`, o que permitia forjar tokens. Agora recusa arrancar (exceto nos testes).
+- **Uploads:** aceita apenas imagens e vídeos, com um limite de 20 MB. Como a pasta é servida publicamente, um ficheiro HTML enviado podia ser usado para XSS. A pasta `uploads/` passou a ser criada automaticamente.
+- **Segredos:** a chave da API Gemini estava escrita no `docker-compose.yml` e no `.env` entregues. Foram removidas e substituídas por um `.env.example`.

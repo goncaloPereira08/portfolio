@@ -10,6 +10,7 @@ import aiRoutes from './routes/ai.routes';
 import cors from 'cors';  
 import feedRoutes from './routes/feed.routes';
 import quoteRoutes from './routes/quote.routes';
+import { getJwtSecret } from './utils/jwtSecret';
 
 // Importações de Segurança (TP7)
 import helmet from 'helmet';
@@ -79,6 +80,7 @@ app.use((_req, _res, next) => {
 app.use(errorHandler);
 
 if (process.env.NODE_ENV !== 'test') {
+  getJwtSecret(); // falha logo no arranque se JWT_SECRET não estiver definido
   app.listen(PORT, () => {
     console.log(`Servidor a correr na porta http://localhost:${PORT}`);
   });
