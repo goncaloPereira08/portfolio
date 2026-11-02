@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.env
+*.log
+__pycache__/
+*.pyc
+*.class
+*.db
+*.key
+*.p12
+keystore.*
+truststore.*
+.DS_Store
+.qodo/
