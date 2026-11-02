@@ -41,7 +41,12 @@ export class UserController {
 
   async update(req: Request, res: Response) {
     try {
-      const user = await userService.updateUser(Number(req.params.id), req.body);
+      // Cada utilizador só pode alterar o seu próprio perfil
+      if (Number(req.params.id) !== (req as any).user.id) {
+        return res.status(403).json({ erro: "Acesso negado: só podes editar o teu próprio perfil." });
+      }
+      const { nome, email } = req.body;
+      const user = await userService.updateUser(Number(req.params.id), { nome, email });
       res.json({ mensagem: "Perfil atualizado!", dados: user });
     } catch (error: any) {
       res.status(400).json({ erro: error.message });

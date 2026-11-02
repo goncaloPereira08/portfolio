@@ -2,7 +2,13 @@
 
 > Projeto de grupo · Projeto de Tecnologias de Redes / Projeto de Tecnologias de Informação · LTI, FCUL · 2024/2025
 >
-> **Stack:** Node.js · Express 5 · MongoDB/Mongoose · Vue 3 · Vue Router · Pinia · JWT · bcrypt · Helmet · Multer
+> **Stack:** Node.js · Express 5 · MongoDB/Mongoose · Vue 3 · Vue Router · Pinia · JWT · bcryptjs · Helmet · Multer
+
+| Catálogo | Gestão de utilizadores (admin) |
+|---|---|
+| ![Catálogo de equipamentos](docs/catalogo.png) | ![Gestão de utilizadores e roles](docs/gestao-utilizadores.png) |
+
+<sub>Capturas feitas com dados de demonstração.</sub>
 
 Aplicação web onde as lojas registam equipamentos usados (com estado, preço, categoria e imagem) para os clientes comprarem. O modelo de dados também prevê doações a entidades sem fins lucrativos e a projetos beneficentes. Inclui:
 - registo e autenticação com JWT; passwords guardadas com bcrypt
@@ -19,6 +25,7 @@ cp .env.example .env      # preencher MONGO_URI e os segredos
 npm install
 node server.js            # API em http://localhost:3000/api
 npm run serve             # frontend Vue em http://localhost:8080
+npm test                  # testes da gestão de utilizadores (não precisa de MongoDB)
 ```
 
 ## Estrutura
@@ -38,4 +45,6 @@ src/                   # frontend Vue 3 (components/, router/, stores/)
 - **Catálogos:** as rotas `/api/catalogos` existiam mas não estavam montadas no servidor, por isso o formulário de registo de equipamentos não carregava os catálogos.
 - O servidor deixa de arrancar sem `JWT_SECRET`. Foi removido código morto (ligação SQLite não utilizada).
 - **Dependências:** o projeto usava `bcrypt` (nativo) e `bcryptjs` em sítios diferentes. Passou a usar só `bcryptjs`, que gera hashes compatíveis, e foram retiradas dependências nativas não usadas (`sqlite3`, `mysql2`), que impediam o `npm install` em máquinas sem ferramentas de compilação.
-- Testado: `npm install` e `npm run build` do frontend Vue sem erros; sintaxe do backend verificada com `node --check`.
+- **Testes novos** (`npm test`, sem precisar de MongoDB, com um modelo em memória): registo, login, listagem, edição e remoção de utilizadores e as regras de permissões por role — 5 testes, todos a passar.
+- Foram retiradas imagens de teste que tinham ficado na pasta pública (incluindo arte de videojogos com direitos de autor).
+- Testado: `npm install` e `npm run build` do frontend Vue sem erros.

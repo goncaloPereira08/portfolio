@@ -4,6 +4,12 @@
 >
 > **Stack:** TypeScript · Node.js/Express 5 · Prisma + PostgreSQL · React + Vite · Socket.IO · Google Gemini · Docker · Vitest/Supertest
 
+| As minhas threads | Detalhe de uma thread |
+|---|---|
+| ![Lista de threads](docs/threads.png) | ![Thread com memórias e membros](docs/thread.png) |
+
+<sub>Capturas feitas com dados de demonstração.</sub>
+
 Este repositório contém a versão final e completa (Full-Stack) do projeto Life Threads, desenvolvido para a unidade curricular de Aplicações e Serviços na Web (2025/2026).
 
 A plataforma atua como um diário digital colaborativo, permitindo aos utilizadores o registo de memórias, a criação de threads partilhadas (com atualizações em tempo real), e a organização de conteúdos através de inteligência artificial. Nesta fase final, o projeto foi totalmente orquestrado em contentores e reforçado com testes automáticos, sistemas de segurança e monitorização contínua.
@@ -89,5 +95,7 @@ docker-compose.yml e Dockerfiles: Orquestração do sistema.
 - **JWT:** sem `JWT_SECRET` definido, o servidor usava o segredo `'secret'`, o que permitia forjar tokens. Agora recusa arrancar (exceto nos testes).
 - **Uploads:** aceita apenas imagens e vídeos, com um limite de 20 MB. Como a pasta é servida publicamente, um ficheiro HTML enviado podia ser usado para XSS. A pasta `uploads/` passou a ser criada automaticamente.
 - **Dependências:** o `package-lock.json` do backend estava dessincronizado do `package.json`, o que fazia falhar o `npm ci`. Foi regenerado.
-- Testado: `npm install` no backend e `npm run build` no frontend (verificação de tipos TypeScript + build Vite) sem erros.
+- **Perfis:** `PUT /api/auth/:id` não exigia autenticação, por isso qualquer pessoa podia alterar o nome ou o email de qualquer conta. Agora exige token e só permite editar o próprio perfil.
+- **Testes de integração novos** (`npm run test:integracao`, sem precisar de PostgreSQL, com um Prisma em memória): registo, login, threads, membros, memórias, permissões de edição/remoção, edição de perfis e filtro de uploads.
+- Testado: os 8 testes originais e os novos testes de integração passam; `npm run build` do frontend (TypeScript + Vite) sem erros.
 - **Segredos:** a chave da API Gemini estava escrita no `docker-compose.yml` e no `.env` entregues. Foram removidas e substituídas por um `.env.example`.
